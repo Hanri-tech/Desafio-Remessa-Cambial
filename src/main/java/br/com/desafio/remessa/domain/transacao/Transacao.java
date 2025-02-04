@@ -19,7 +19,7 @@ public class Transacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @ManyToOne()
     @JoinColumn(name = "pagadorId")

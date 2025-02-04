@@ -5,6 +5,9 @@ WORKDIR /build
 COPY pom.xml ./
 COPY .mvn .mvn
 
+# Baixa todas as dependências do Maven ANTES de copiar o código-fonte
+RUN mvn dependency:go-offline -B
+
 COPY src src
 
 RUN mvn clean install -DskipTests

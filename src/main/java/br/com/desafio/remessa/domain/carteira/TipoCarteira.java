@@ -12,13 +12,18 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
+
 @NoArgsConstructor
 public class TipoCarteira {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
     private String descricao;
+
+    public TipoCarteira(int id, String descricao) {
+        this.id = id;
+        this.descricao = descricao;
+    }
 
 }

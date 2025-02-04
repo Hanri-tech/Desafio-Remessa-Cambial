@@ -3,10 +3,10 @@ services:
     image: oscarfonts/h2:latest
     container_name: remessa_h2
     environment:
-      H2_OPTIONS: -ifNotExists;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:schema.sql'
+      H2_OPTIONS: -ifNotExists
     ports:
       - "1521:1521"
-      - "8082:8082"
+      - "81:81"
     restart: always
     networks:
       - backend
@@ -20,18 +20,14 @@ services:
       - "8080:8080"
     depends_on:
       - h2
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:h2:mem:remessaDB;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-      SPRING_DATASOURCE_USERNAME: sa
-      SPRING_DATASOURCE_PASSWORD: senha@12345
     restart: unless-stopped
     networks:
       - backend
+    volumes:
+      - ./target:/app/target
 
 networks:
   backend:
     driver: bridge
-
-
 
 

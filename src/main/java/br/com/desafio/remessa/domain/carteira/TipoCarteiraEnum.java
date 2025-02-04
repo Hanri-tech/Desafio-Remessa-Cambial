@@ -15,4 +15,5 @@ public enum TipoCarteiraEnum {
     public TipoCarteira getTipoCarteira() {
         return new TipoCarteira(id, descricao);
     }
+
 }
