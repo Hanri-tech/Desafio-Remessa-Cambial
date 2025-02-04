@@ -1,5 +1,6 @@
 package br.com.desafio.remessa.domains.transacao;
 
+import br.com.desafio.remessa.domains.cambio.Cambio;
 import br.com.desafio.remessa.domains.carteira.Carteira;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,5 +33,9 @@ public class Transacao {
     private BigDecimal vlrTransferencia;
 
     private Timestamp dhTransferencia;
+
+    @ManyToOne
+    @JoinColumn(name = "cambioId")
+    private Cambio cambio;
 
 }
