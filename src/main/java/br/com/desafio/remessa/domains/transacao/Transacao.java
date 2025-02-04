@@ -30,7 +30,8 @@ public class Transacao {
     @JoinColumn(name = "recebedorId")
     private Carteira recebedor;
 
-    private BigDecimal vlrTransferencia;
+    @Column(precision = 10, scale = 2)
+    private BigDecimal vlrTransferenciaBRL;
 
     private Timestamp dhTransferencia;
 

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class ExceptionsRestHandler {
+public class RestHandlerExceptions {
 
     @ExceptionHandler(CampoObrigatorioNuloException.class)
     public ResponseEntity<?> campoObrigatorioNuloExceptions(CampoObrigatorioNuloException e) {

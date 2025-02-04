@@ -11,4 +11,12 @@ public enum TipoCarteiraEnum {
         this.id = id;
         this.descricao = descricao;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

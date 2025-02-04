@@ -1,4 +1,10 @@
 package br.com.desafio.remessa.dtos;
 
-public class TransacaoDTO {
+import java.math.BigDecimal;
+
+public record TransacaoDTO(
+        Long pagador,
+        Long recebedor,
+        BigDecimal vlrTransferencia
+) {
 }

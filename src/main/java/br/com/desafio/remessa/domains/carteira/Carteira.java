@@ -31,10 +31,10 @@ public class Carteira {
     @Column(nullable = false, unique = true)
     private String documento;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal saldoBRL = BigDecimal.ZERO;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 4)
     private BigDecimal saldoUSD = BigDecimal.ZERO;
 
     public Long getId() {

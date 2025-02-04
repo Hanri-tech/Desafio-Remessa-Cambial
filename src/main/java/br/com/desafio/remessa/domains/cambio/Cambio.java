@@ -12,7 +12,7 @@ public class Cambio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, precision = 10, scale = 4)
+    @Column(nullable = false, precision = 12, scale = 4)
     private BigDecimal valorConvertidoUSD;
 
     @Column(nullable = false, precision = 10, scale = 4)
