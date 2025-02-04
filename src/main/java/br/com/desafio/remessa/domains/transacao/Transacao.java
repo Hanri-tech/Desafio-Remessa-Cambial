@@ -1,6 +1,6 @@
-package br.com.desafio.remessa.domain.transacao;
+package br.com.desafio.remessa.domains.transacao;
 
-import br.com.desafio.remessa.domain.carteira.Carteira;
+import br.com.desafio.remessa.domains.carteira.Carteira;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
