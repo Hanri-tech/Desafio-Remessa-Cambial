@@ -3,6 +3,8 @@ package br.com.desafio.remessa.services;
 import br.com.desafio.remessa.client.CotacaoClient;
 import br.com.desafio.remessa.domains.cotacao.CotacaoMoeda;
 import br.com.desafio.remessa.dtos.CotacaoDolarResponseDTO;
+import br.com.desafio.remessa.exceptions.ErroBuscarUltimaCotacaoException;
+import br.com.desafio.remessa.exceptions.ErroConsumirApiCotacaoException;
 import br.com.desafio.remessa.repositories.CotacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,18 +35,18 @@ public class CotacaoDolarService {
         ResponseEntity<CotacaoDolarResponseDTO> dolarDia = cotacaoClient.getApiCotacaoDolarDia(dataFormatada, "json");
 
         if (!dolarDia.getStatusCode().is2xxSuccessful()) {
-            throw new RuntimeException("Erro ao buscar cotacao dolar");
+            throw new ErroConsumirApiCotacaoException();
         }
         CotacaoDolarResponseDTO cotacaoDolarResponseDTO = dolarDia.getBody();
         boolean vazio = Objects.requireNonNull(cotacaoDolarResponseDTO).getValue().isEmpty();
         if (vazio) {
-            throw new RuntimeException("Erro ao buscar cotacao dolar");
+            throw new ErroConsumirApiCotacaoException();
         }
         return dolarDia.getBody().getValue().get(0).getCotacaoCompra();
     }
 
-    @Cacheable(cacheNames = "cotacaoDolar", condition = "#hoje")
-    public BigDecimal obterCotacaoDolar(LocalDate hoje) throws Exception {
+    @Cacheable(value = "cotacaoDolar", key = "#hoje.toString()")
+    public BigDecimal obterCotacaoDolar(LocalDate hoje) {
         DayOfWeek diaSemana = hoje.getDayOfWeek();
 
         if (diaSemana == DayOfWeek.SATURDAY || diaSemana == DayOfWeek.SUNDAY) {
@@ -64,9 +66,9 @@ public class CotacaoDolarService {
         }
     }
 
-    private BigDecimal buscarUltimaCotacao() throws Exception {
+    private BigDecimal buscarUltimaCotacao() {
         CotacaoMoeda cotacaoMoeda = cotacaoRepository.findFirstByOrderByDataDesc()
-                .orElseThrow(Exception::new);
+                .orElseThrow(ErroBuscarUltimaCotacaoException::new);
 
         return cotacaoMoeda.getValor();
     }

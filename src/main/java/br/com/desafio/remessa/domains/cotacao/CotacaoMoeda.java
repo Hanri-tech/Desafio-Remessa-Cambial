@@ -17,7 +17,7 @@ public class CotacaoMoeda {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(precision = 10, scale = 2)
+    @Column(precision = 10, scale = 5)
     private BigDecimal valor;
 
     private LocalDate data;

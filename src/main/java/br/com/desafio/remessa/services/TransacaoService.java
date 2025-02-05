@@ -7,6 +7,10 @@ import br.com.desafio.remessa.domains.cotacao.CotacaoMoeda;
 import br.com.desafio.remessa.domains.transacao.Transacao;
 import br.com.desafio.remessa.dtos.TransacaoDTO;
 import br.com.desafio.remessa.exceptions.CarteiraNaoEncontradaException;
+import br.com.desafio.remessa.exceptions.EnviarRemessaPagadorParaPagadorException;
+import br.com.desafio.remessa.exceptions.SemLimiteDisponvelException;
+import br.com.desafio.remessa.exceptions.ValorLimiteExcedidoException;
+import br.com.desafio.remessa.repositories.CambioRepository;
 import br.com.desafio.remessa.repositories.CarteiraRepository;
 import br.com.desafio.remessa.repositories.CotacaoRepository;
 import br.com.desafio.remessa.repositories.TransacaoRepository;
@@ -32,15 +36,19 @@ public class TransacaoService {
 
     @Autowired
     private CotacaoDolarService cotacaoDolarService;
+
     @Autowired
     private CotacaoRepository cotacaoRepository;
 
+    @Autowired
+    private CambioRepository cambioRepository;
+
     @Transactional
-    public Transacao realizarRemessa(TransacaoDTO transacaoDTO) throws Exception {
+    public Transacao realizarRemessa(TransacaoDTO transacaoDTO) {
         Carteira carteiraPagador = carteiraRepository.findById(transacaoDTO.pagador()).orElseThrow(CarteiraNaoEncontradaException::new);
         Carteira carteiraRecebedor = carteiraRepository.findById(transacaoDTO.recebedor()).orElseThrow(CarteiraNaoEncontradaException::new);
         if (transacaoDTO.pagador().equals(transacaoDTO.recebedor())) {
-            throw new Exception("Operação não permitida");
+            throw new EnviarRemessaPagadorParaPagadorException();
         }
         validarLimiteTransacaoPorDia(carteiraPagador);
         validarSaldoTranferencia(transacaoDTO.vlrTransferencia(), carteiraPagador);
@@ -61,7 +69,7 @@ public class TransacaoService {
         return transacaoRepository.save(transacao);
     }
 
-    private Cambio criarVariacaoCambial(BigDecimal cambioBRLparaUSD) throws Exception {
+    private Cambio criarVariacaoCambial(BigDecimal cambioBRLparaUSD) {
         Cambio cambio = new Cambio();
         LocalDate ontem = LocalDate.now().minusDays(1);
         BigDecimal cotacaoDolarHoje = cotacaoDolarService.obterCotacaoDolar(LocalDate.now());
@@ -69,7 +77,7 @@ public class TransacaoService {
         Optional<CotacaoMoeda> cotacaoMoedaOntem = cotacaoRepository.findByData(ontem);
 
         BigDecimal vlrMoedaOntem = getVlrMoedaOntem(cotacaoDolarHoje, cotacaoMoedaOntem);
-        BigDecimal variacaoAbsoluto = vlrMoedaOntem.subtract(cotacaoDolarHoje);
+        BigDecimal variacaoAbsoluto = cotacaoDolarHoje.subtract(vlrMoedaOntem);
         BigDecimal variacaoCambialPorcetagem = getCambialPorcetagem(vlrMoedaOntem, variacaoAbsoluto);
 
 
@@ -78,7 +86,7 @@ public class TransacaoService {
         cambio.setVlrCambioBRLParaUSD(cambioBRLparaUSD);
         cambio.setVariacaoCambial(variacaoAbsoluto);
         cambio.setVariacaoCambialPercentual(variacaoCambialPorcetagem);
-        return cambio;
+        return cambioRepository.save(cambio);
     }
 
     private BigDecimal getCambialPorcetagem(BigDecimal vlrMoedaOntem, BigDecimal variacaoAbsoluto) {
@@ -95,11 +103,11 @@ public class TransacaoService {
         return vlrMoedaOntem;
     }
 
-    private void creditar(BigDecimal cambioBRLparaUSD, Carteira carteiraRecebedor) throws Exception {
+    private void creditar(BigDecimal cambioBRLparaUSD, Carteira carteiraRecebedor) {
         carteiraRecebedor.setSaldoUSD(carteiraRecebedor.getSaldoUSD().add(cambioBRLparaUSD));
     }
 
-    private BigDecimal getCambioBRLparaUSD(TransacaoDTO transacaoDTO) throws Exception {
+    private BigDecimal getCambioBRLparaUSD(TransacaoDTO transacaoDTO) {
         BigDecimal cotacaoDolar = cotacaoDolarService.obterCotacaoDolar(LocalDate.now());
         BigDecimal cambioBRLparaUSD = transacaoDTO.vlrTransferencia()
                 .divide(cotacaoDolar, 4, BigDecimal.ROUND_HALF_UP);
@@ -111,24 +119,24 @@ public class TransacaoService {
                 .subtract(transacaoDTO.vlrTransferencia()));
     }
 
-    private static void validarSaldoTranferencia(BigDecimal vlrTransferencia, Carteira carteiraPagador) throws Exception {
+    private static void validarSaldoTranferencia(BigDecimal vlrTransferencia, Carteira carteiraPagador) {
         boolean semLimiteTranferencia = carteiraPagador.getSaldoBRL().compareTo(vlrTransferencia) < 0;
 
         if (semLimiteTranferencia) {
-            throw new Exception("Sem limite disponovel para transferencia");
+            throw new SemLimiteDisponvelException();
         }
     }
 
-    private void validarLimiteTransacaoPorDia(Carteira carteiraPagador) throws Exception {
+    private void validarLimiteTransacaoPorDia(Carteira carteiraPagador) {
         BigDecimal vlrTransacionadoHoje = transacaoRepository.findSumDiaByTransacao(carteiraPagador.getId(), LocalDate.now());
         boolean cateiraCpf = carteiraPagador.getTipoCarteira().getId().equals(TipoCarteiraEnum.CPF.getId());
         boolean cateiraCnpj = carteiraPagador.getTipoCarteira().getId().equals(TipoCarteiraEnum.CNPJ.getId());
 
         if (cateiraCpf && vlrTransacionadoHoje.compareTo(BigDecimal.valueOf(10000L)) >= 0) {
-            throw new Exception("Valor limite transacional por dia atigindo ");
+            throw new ValorLimiteExcedidoException("O valor " + 10000 + " excede o limite diário permitido para transações.");
         }
         if (cateiraCnpj && vlrTransacionadoHoje.compareTo(BigDecimal.valueOf(50000L)) >= 0) {
-            throw new Exception("Valor limite transacional por dia atigindo ");
+            throw new ValorLimiteExcedidoException("O valor " + 50000 + " excede o limite diário permitido para transações.");
         }
     }
 
