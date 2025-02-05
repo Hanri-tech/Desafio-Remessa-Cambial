@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -17,7 +18,7 @@ public class TransacaoController {
     private TransacaoService transacaoService;
 
     @PostMapping
-    public ResponseEntity<Transacao> criarTransacao(TransacaoDTO transacaoDTO) throws Exception {
+    public ResponseEntity<Transacao> criarTransacao(@RequestBody TransacaoDTO transacaoDTO) throws Exception {
         Transacao transacao = transacaoService.realizarRemessa(transacaoDTO);
         return ResponseEntity.ok(transacao);
     }

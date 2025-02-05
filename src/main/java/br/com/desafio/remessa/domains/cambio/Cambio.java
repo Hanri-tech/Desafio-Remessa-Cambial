@@ -3,7 +3,7 @@ package br.com.desafio.remessa.domains.cambio;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 public class Cambio {
@@ -13,30 +13,21 @@ public class Cambio {
     private Long id;
 
     @Column(nullable = false, precision = 12, scale = 4)
-    private BigDecimal valorConvertidoUSD;
+    private BigDecimal vlrCambioBRLParaUSD;
 
     @Column(nullable = false, precision = 10, scale = 4)
-    private BigDecimal cotacaoAtual;
+    private BigDecimal cotacaoMoedaHoje;
 
     @Column(precision = 10, scale = 4)
-    private BigDecimal variacaoCambialBRL;
+    private BigDecimal variacaoCambialAbsoluta;
 
     @Column(precision = 5, scale = 2)
     private BigDecimal variacaoCambialPercentual;
 
     @Column(nullable = false)
-    private LocalDateTime dataCotacao;
+    private LocalDate dataCotacao;
 
     public Cambio() {}
-
-    public Cambio(BigDecimal valorConvertidoUSD, BigDecimal cotacaoAtual, BigDecimal variacaoCambialAbsoluta,
-                  BigDecimal variacaoCambialPercentual, LocalDateTime dataCotacao) {
-        this.valorConvertidoUSD = valorConvertidoUSD;
-        this.cotacaoAtual = cotacaoAtual;
-        this.variacaoCambialBRL = variacaoCambialAbsoluta;
-        this.variacaoCambialPercentual = variacaoCambialPercentual;
-        this.dataCotacao = dataCotacao;
-    }
 
     // Getters e Setters
     public Long getId() {
@@ -47,28 +38,28 @@ public class Cambio {
         this.id = id;
     }
 
-    public BigDecimal getValorConvertidoUSD() {
-        return valorConvertidoUSD;
+    public BigDecimal getVlrCambioBRLParaUSD() {
+        return vlrCambioBRLParaUSD;
     }
 
-    public void setValorConvertidoUSD(BigDecimal valorConvertidoUSD) {
-        this.valorConvertidoUSD = valorConvertidoUSD;
+    public void setVlrCambioBRLParaUSD(BigDecimal vlrcambioBRLparaUSD) {
+        this.vlrCambioBRLParaUSD = vlrcambioBRLparaUSD;
     }
 
-    public BigDecimal getCotacaoAtual() {
-        return cotacaoAtual;
+    public BigDecimal getCotacaoMoedaHoje() {
+        return cotacaoMoedaHoje;
     }
 
-    public void setCotacaoAtual(BigDecimal cotacaoCompra) {
-        this.cotacaoAtual = cotacaoCompra;
+    public void setCotacaoMoedaHoje(BigDecimal cotacaoCompra) {
+        this.cotacaoMoedaHoje = cotacaoCompra;
     }
 
-    public BigDecimal getVariacaoCambialBRL() {
-        return variacaoCambialBRL;
+    public BigDecimal getVariacaoCambialAbsoluta() {
+        return variacaoCambialAbsoluta;
     }
 
-    public void setVariacaoCambialAbsoluta(BigDecimal variacaoCambialBRL) {
-        this.variacaoCambialBRL = variacaoCambialBRL;
+    public void setVariacaoCambial(BigDecimal variacaoCambialBRL) {
+        this.variacaoCambialAbsoluta = variacaoCambialBRL;
     }
 
     public BigDecimal getVariacaoCambialPercentual() {
@@ -79,11 +70,11 @@ public class Cambio {
         this.variacaoCambialPercentual = variacaoCambialPercentual;
     }
 
-    public LocalDateTime getDataCotacao() {
+    public LocalDate getDataCotacao() {
         return dataCotacao;
     }
 
-    public void setDataCotacao(LocalDateTime dataCotacao) {
+    public void setDataCotacao(LocalDate dataCotacao) {
         this.dataCotacao = dataCotacao;
     }
 }

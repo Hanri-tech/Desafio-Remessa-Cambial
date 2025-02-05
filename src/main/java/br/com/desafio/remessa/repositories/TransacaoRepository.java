@@ -10,8 +10,8 @@ import java.time.LocalDate;
 
 public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
 
-    @Query(" SELECT COALESCE(SUM (t.vlrTransferencia), 0) " +
-            " FROM Transacao t where t.id = :usuarioId AND cast(t.dhTransferencia as DATE ) = : data")
+    @Query(" SELECT COALESCE(SUM (t.vlrTransferenciaBRL), 0) " +
+            " FROM Transacao t where t.id = :id AND cast(t.dhTransferencia as DATE ) = :data")
     BigDecimal findSumDiaByTransacao(@Param("id") Long usuarioId, @Param("data") LocalDate data);
 
 }
